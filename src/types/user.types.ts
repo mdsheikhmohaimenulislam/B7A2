@@ -10,9 +10,7 @@ export interface User {
   name: string;
   email: string;
   password: string;
-  role: Role;
-  created_at: string;
-  updated_at: string;
+  role?: Role;
 }
 
 export interface CreateUserRequest {
