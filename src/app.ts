@@ -3,7 +3,8 @@ import express, {
   type Request,
   type Response,
 } from "express";
-import { userRoute } from "./modules/users/users.route";
+import { userRoute } from "./modules/auth/auth.routes";
+
 const app: Application = express();
 
 // MiddleWare
@@ -14,7 +15,8 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 
-app.use("/api/auth/signup",userRoute)
+app.use("/api/auth",userRoute)
+
 
 
 export default app;

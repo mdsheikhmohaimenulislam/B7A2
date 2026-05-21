@@ -13,9 +13,8 @@ export interface User {
   role?: Role;
 }
 
-export interface CreateUserRequest {
-  name: string;
+export interface CreateLoginRequest {
   email: string;
   password: string;
-  role?: Role;
+
 }
