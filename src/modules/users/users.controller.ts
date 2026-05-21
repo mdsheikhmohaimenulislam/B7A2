@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import sendRespond from "../../utils/sendResponse";
 import { userService } from "./users.service";
+import sendErrorResponse from "../../utils/errorHandler";
 
 const createSignup = async (req: Request, res: Response) => {
   //   console.log(req.body);
@@ -13,11 +14,11 @@ const createSignup = async (req: Request, res: Response) => {
       data: result.rows[0],
     });
   } catch (error: unknown) {
-    sendRespond(res, {
-      status: 500,
+    sendErrorResponse(res, {
+      status: 400,
       success: false,
-      message: "Something went wrong",
-      error: error instanceof Error ? error.message : error,
+      message: "Invalid input data",
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 };
