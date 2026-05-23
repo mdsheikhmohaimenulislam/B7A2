@@ -49,7 +49,6 @@ export interface User {
   role: string;
 }
 
-
 export interface singleIssueData {
   id: number;
   title: string;
@@ -60,3 +59,10 @@ export interface singleIssueData {
   created_at: string;
   updated_at: string;
 }
+
+export type updatedIssueData = {
+  title: string;
+  description: string;
+  type: IssueType;
+
+};

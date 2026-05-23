@@ -92,8 +92,50 @@ const getSingleIssue = async (req: Request, res: Response) => {
   }
 };
 
+const updatedSingleIssue = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const token = req.headers.authorization;
+    if (!token) {
+      return sendRespond(res, {
+        status: 401,
+        success: false,
+        message: "No token provided",
+      });
+    } 
+
+    const result = await issueService.updatedSingleIssueIntoDB(
+      req.body,
+      Number(id),
+      token,
+    );
+
+    if (!result) {
+      return sendErrorResponse(res, {
+        status: 404,
+        success: false,
+        message: "Issue Not Found!..",
+      });
+    }
+
+    return sendRespond(res, {
+      status: 200,
+      success: true,
+      message: "Issue updated successfully",
+      data: result,
+    });
+  } catch (error: unknown) {
+    return sendErrorResponse(res, {
+      status: 400,
+      success: false,
+      error: error instanceof Error ? error.message : "Internal Server Error",
+    });
+  }
+};
+
 export const issuesController = {
   CreateIssue,
   getAllIssues,
   getSingleIssue,
+  updatedSingleIssue,
 };

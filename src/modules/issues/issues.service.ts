@@ -5,6 +5,7 @@ import type {
   CreateIssueRequest,
   IssueQuery,
   JwtUser,
+  updatedIssueData,
 } from "../../types/issue.types";
 import jwt from "jsonwebtoken";
 
@@ -171,8 +172,91 @@ const getSingleIssueIntoDB = async (id: number) => {
   };
 };
 
+const updatedSingleIssueIntoDB = async (
+  payload: updatedIssueData,
+  id: number,
+  token: string,
+) => {
+  const decoded = jwt.verify(token, config.jwt_secret!) as JwtUser;
+  const userId = decoded.id;
+
+  const issueResult = await pool.query(`SELECT * FROM issues WHERE id = $1`, [
+    id,
+  ]);
+
+  const issue = issueResult.rows[0];
+
+  if (!issue) {
+    throw new Error("Issue not found");
+  }
+
+  const userResult = await pool.query(`SELECT * FROM users WHERE id = $1`, [
+    userId,
+  ]);
+
+  const user = userResult.rows[0];
+
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  // access control
+  if (user.role === "contributor") {
+    if (issue.reporter_id !== userId) {
+      throw new Error("Not allowed to update this issue");
+    }
+
+    if (issue.status !== "open") {
+      throw new Error("Only open issues can be updated");
+    }
+  }
+
+  const { title, description, type } = payload;
+
+  if (type) {
+    const allowedTypes = ["bug", "feature_request"] as const;
+    if (!allowedTypes.includes(type)) {
+      throw new Error("Type must be bug or feature_request");
+    }
+  }
+
+  const currentStatus = issue.status;
+  let newStatus = currentStatus;
+
+  if (user.role === "maintainer" && newStatus === "in_progress") {
+    throw new Error("Already in_progress");
+  }
+
+  // auto workflow rule
+  if (currentStatus === "open") {
+    newStatus = "in_progress";
+  }
+  if(currentStatus==="in_progress"){
+    throw new Error("Already in_progress");
+  }
+
+  // then USE it in DB
+  const result = await pool.query(
+    `
+  UPDATE issues
+  SET
+    title = COALESCE($1, title),
+    description = COALESCE($2, description),
+    type = COALESCE($3, type),
+    status = $4,
+    updated_at = NOW()
+  WHERE id = $5
+  RETURNING *
+  `,
+    [title, description, type, newStatus, id],
+  );
+
+  return result.rows[0];
+};
+
 export const issueService = {
   createIssueIntoDB,
   getAllIssuesIntoDB,
   getSingleIssueIntoDB,
+  updatedSingleIssueIntoDB,
 };
