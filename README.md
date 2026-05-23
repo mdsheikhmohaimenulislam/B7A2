@@ -6,8 +6,7 @@ A collaborative platform for software teams to report bugs, suggest features, an
 
 ## 🚀 Live URL
 
-- Client: https://your-client-url.com
-- Server: https://your-server-url.com
+- Backend: https://b7-a2-tau.vercel.app/
 
 ---
 
@@ -122,9 +121,6 @@ Authorization: <JWT_TOKEN>
   "type": "bug"
 }
 
-# 📋 Get All Issues
-
-## Endpoint
 
 ```http
 GET /api/issues
@@ -268,10 +264,6 @@ Authorization: <JWT_TOKEN>
 - Dashboard Analytics
 
 ---
-
-## 🚀 Live URL
-
-- Backend: https://b7-a2-tau.vercel.app/
 
 # 👨‍💻 Author
 
