@@ -42,18 +42,18 @@ const createIssueIntoDB = async (payload: string, body: CreateIssueRequest) => {
 //   console.log(reporter_id);
 
   //   console.log(body);
-//   const result = await pool.query(
-//     `
-//       INSERT INTO issues
-//       (title, description, type,reporter_id)
-//       VALUES ($1, $2, $3, $4)
-//       RETURNING *
-//       `,
-//     [title, description, type, reporter_id],
-//   );
+  const result = await pool.query(
+    `
+      INSERT INTO issues
+      (title, description, type,reporter_id)
+      VALUES ($1, $2, $3, $4)
+      RETURNING *
+      `,
+    [title, description, type, reporter_id],
+  );
   // console.log("create issues",result);
 
-//   return result.rows[0];
+  return result.rows[0];
 };
 
 export const issueService = {
