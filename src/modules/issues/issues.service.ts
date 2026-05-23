@@ -148,6 +148,9 @@ const getSingleIssueIntoDB = async (id: number) => {
     [issue.reporter_id],
   );
 
+  if (issueResult.rows.length === 0) {
+    return null;
+  }
   const user = userResult.rows[0];
 
   return {

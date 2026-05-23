@@ -69,14 +69,26 @@ const getSingleIssue = async (req: Request, res: Response) => {
       });
     }
     const result = await issueService.getSingleIssueIntoDB(Number(id));
+    if (!result) {
+      return sendErrorResponse(res, {
+        status: 404,
+        success: false,
+        message: "Issue not found",
+      });
+    }
 
     return sendRespond(res, {
       status: 200,
       success: true,
       data: result,
     });
-  } catch (error) {
-    console.log(error);
+  } catch (error: unknown) {
+    sendErrorResponse(res, {
+      status: 500,
+      success: false,
+
+      data: error instanceof Error ? error.message : "Internal Server Error",
+    });
   }
 };
 
