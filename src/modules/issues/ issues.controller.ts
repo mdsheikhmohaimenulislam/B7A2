@@ -102,7 +102,7 @@ const updatedSingleIssue = async (req: Request, res: Response) => {
         success: false,
         message: "No token provided",
       });
-    } 
+    }
 
     const result = await issueService.updatedSingleIssueIntoDB(
       req.body,
@@ -133,9 +133,12 @@ const updatedSingleIssue = async (req: Request, res: Response) => {
   }
 };
 
+const deletedSingleIssue = async (req: Request, res: Response) => {};
+
 export const issuesController = {
   CreateIssue,
   getAllIssues,
   getSingleIssue,
   updatedSingleIssue,
+  deletedSingleIssue,
 };

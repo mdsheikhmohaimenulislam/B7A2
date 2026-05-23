@@ -200,17 +200,6 @@ const updatedSingleIssueIntoDB = async (
     throw new Error("User not found");
   }
 
-  // access control
-  if (user.role === "contributor") {
-    if (issue.reporter_id !== userId) {
-      throw new Error("Not allowed to update this issue");
-    }
-
-    if (issue.status !== "open") {
-      throw new Error("Only open issues can be updated");
-    }
-  }
-
   const { title, description, type } = payload;
 
   if (type) {
@@ -223,16 +212,27 @@ const updatedSingleIssueIntoDB = async (
   const currentStatus = issue.status;
   let newStatus = currentStatus;
 
-  if (user.role === "maintainer" && newStatus === "in_progress") {
-    throw new Error("Already in_progress");
-  }
+  // access control
+  if (user.role === "contributor") {
+    if (issue.reporter_id !== userId) {
+      throw new Error("Not allowed to update this issue");
+    }
 
+    if (issue.status !== "open") {
+      throw new Error("Only open issues can be updated");
+    }
+  }
   // auto workflow rule
   if (currentStatus === "open") {
     newStatus = "in_progress";
   }
-  if(currentStatus==="in_progress"){
-    throw new Error("Already in_progress");
+
+
+  if (user.role === "maintainer" && currentStatus === "in_progress") {
+    newStatus = "resolved";
+  }
+  if (user.role === "maintainer" && currentStatus === "resolved") {
+    throw new Error("Issue is already resolved and cannot be modified");
   }
 
   // then USE it in DB
@@ -254,9 +254,12 @@ const updatedSingleIssueIntoDB = async (
   return result.rows[0];
 };
 
+const deletedSingleIssueIntoDB = async () => {};
+
 export const issueService = {
   createIssueIntoDB,
   getAllIssuesIntoDB,
   getSingleIssueIntoDB,
   updatedSingleIssueIntoDB,
+  deletedSingleIssueIntoDB,
 };
