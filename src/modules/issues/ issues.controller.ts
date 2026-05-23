@@ -162,7 +162,7 @@ const deletedSingleIssue = async (req: Request, res: Response) => {
       status: 200,
       success: true,
       message: "Issue deleted successfully",
-      data: result,
+      // data: result,
     });
   } catch (error: unknown) {
     return sendErrorResponse(res, {
