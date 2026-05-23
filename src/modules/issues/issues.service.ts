@@ -134,7 +134,42 @@ const getAllIssuesIntoDB = async (IssuesQuery: IssueQuery) => {
   }
 };
 
+const getSingleIssueIntoDB = async (id: number) => {
+  const issueResult = await pool.query(`SELECT * FROM issues WHERE id = $1`, [
+    id,
+  ]);
+
+  const issue = issueResult.rows[0];
+
+  if (!issue) return null;
+
+  const userResult = await pool.query(
+    `SELECT id, name, role FROM users WHERE id = $1`,
+    [issue.reporter_id],
+  );
+
+  const user = userResult.rows[0];
+
+  return {
+    id: issue.id,
+    title: issue.title,
+    description: issue.description,
+    type: issue.type,
+    status: issue.status,
+    reporter: user
+      ? {
+          id: user.id,
+          name: user.name,
+          role: user.role,
+        }
+      : null,
+    created_at: issue.created_at,
+    updated_at: issue.updated_at,
+  };
+};
+
 export const issueService = {
   createIssueIntoDB,
   getAllIssuesIntoDB,
+  getSingleIssueIntoDB,
 };

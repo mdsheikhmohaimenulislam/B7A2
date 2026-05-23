@@ -3,7 +3,7 @@ import type { Response } from "express";
 type TRespond<T> = {
   status: number;
   success: boolean;
-  message: string;
+  message?: string;
   data?: T;
   error?: unknown;
 };

@@ -28,9 +28,8 @@ export interface CreateIssueRequest {
   title: string;
   description: string;
   type: IssueType;
-  status?:string
+  status?: Status;
 }
-
 
 export interface JwtUser {
   id: number;
@@ -38,9 +37,26 @@ export interface JwtUser {
   exp?: number;
 }
 
-
 export type IssueQuery = {
   sort?: "newest" | "oldest";
-  type?: "bug" | "feature_request";
-  status?: "open" | "in_progress" | "resolved";
+  type?: IssueType;
+  status?: Status;
 };
+
+export interface User {
+  id: number;
+  name: string;
+  role: string;
+}
+
+
+export interface singleIssueData {
+  id: number;
+  title: string;
+  description: string;
+  type: IssueType;
+  status: Status;
+  reporter: User;
+  created_at: string;
+  updated_at: string;
+}

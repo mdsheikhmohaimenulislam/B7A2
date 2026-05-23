@@ -44,7 +44,8 @@ const getAllIssues = async (req: Request, res: Response) => {
   try {
     const result = await issueService.getAllIssuesIntoDB(req.query);
 
-    return res.status(200).json({
+    return sendRespond(res, {
+      status: 200,
       success: true,
       data: result,
     });
@@ -57,7 +58,30 @@ const getAllIssues = async (req: Request, res: Response) => {
   }
 };
 
+const getSingleIssue = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    if (!id) {
+      sendRespond(res, {
+        status: 400,
+        success: false,
+        message: "Issue id is required",
+      });
+    }
+    const result = await issueService.getSingleIssueIntoDB(Number(id));
+
+    return sendRespond(res, {
+      status: 200,
+      success: true,
+      data: result,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 export const issuesController = {
   CreateIssue,
   getAllIssues,
+  getSingleIssue,
 };
