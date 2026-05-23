@@ -227,7 +227,6 @@ const updatedSingleIssueIntoDB = async (
     newStatus = "in_progress";
   }
 
-
   if (user.role === "maintainer" && currentStatus === "in_progress") {
     newStatus = "resolved";
   }
@@ -254,7 +253,48 @@ const updatedSingleIssueIntoDB = async (
   return result.rows[0];
 };
 
-const deletedSingleIssueIntoDB = async () => {};
+const deletedSingleIssueIntoDB = async (id: number, token: string) => {
+  const decoded = jwt.verify(token, config.jwt_secret!) as JwtUser;
+  const userId = decoded.id;
+
+   const issueResult = await pool.query(
+    `SELECT * FROM issues WHERE id = $1`,
+    [id]
+  );
+
+  const issue = issueResult.rows[0];
+
+  if (!issue) {
+    throw new Error("Issue not found");
+  }
+
+ 
+  const userResult = await pool.query(
+    `SELECT * FROM users WHERE id = $1`,
+    [userId]
+  );
+
+  const user = userResult.rows[0];
+
+  if (!user) {
+    throw new Error("User not found");
+  }
+if (user.role !== "maintainer") {
+  throw new Error("Only maintainer can delete issues");
+}
+if (user.role !== "maintainer") {
+  throw new Error("Only maintainer can delete this issue");
+}
+
+  const result = await pool.query(
+    `DELETE FROM issues WHERE id = $1 RETURNING *`,
+    [id]
+  );
+
+  return result.rows[0];
+
+
+};
 
 export const issueService = {
   createIssueIntoDB,

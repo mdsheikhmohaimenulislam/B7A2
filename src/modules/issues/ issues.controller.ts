@@ -133,7 +133,46 @@ const updatedSingleIssue = async (req: Request, res: Response) => {
   }
 };
 
-const deletedSingleIssue = async (req: Request, res: Response) => {};
+const deletedSingleIssue = async (req: Request, res: Response) => {
+    try {
+
+    const token = req.headers.authorization;
+    if (!token) {
+      return sendRespond(res, {
+        status: 401,
+        success: false,
+        message: "No token provided",
+      });
+    }
+
+    const result = await issueService.deletedSingleIssueIntoDB(
+     Number(req.params.id),
+      token,
+    );
+
+    if (!result) {
+      return sendErrorResponse(res, {
+        status: 404,
+        success: false,
+        message: "Issue Not Found!..",
+      });
+    }
+
+    return sendRespond(res, {
+      status: 200,
+      success: true,
+      message: "Issue deleted successfully",
+      data: result,
+    });
+  } catch (error: unknown) {
+    return sendErrorResponse(res, {
+      status: 400,
+      success: false,
+      message:"Error description",
+      error: error instanceof Error ? error.message : "Error details",
+    });
+  }
+};
 
 export const issuesController = {
   CreateIssue,
