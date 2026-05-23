@@ -271,7 +271,7 @@ Authorization: <JWT_TOKEN>
 
 ## 🚀 Live URL
 
-- Backend: https://your-backend-url.com
+- Backend: https://b7-a2-tau.vercel.app/
 
 # 👨‍💻 Author
 
