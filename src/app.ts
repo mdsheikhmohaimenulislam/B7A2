@@ -4,6 +4,7 @@ import express, {
   type Response,
 } from "express";
 import { userRoute } from "./modules/auth/auth.routes";
+import { issueRoute } from "./modules/issues/issues.routes";
 
 const app: Application = express();
 
@@ -16,7 +17,7 @@ app.get("/", (req: Request, res: Response) => {
 
 
 app.use("/api/auth",userRoute)
-
+app.use("/api/issues",issueRoute)
 
 
 export default app;

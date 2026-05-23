@@ -11,10 +11,11 @@ export interface User {
   email: string;
   password: string;
   role?: Role;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface CreateLoginRequest {
   email: string;
   password: string;
-
 }

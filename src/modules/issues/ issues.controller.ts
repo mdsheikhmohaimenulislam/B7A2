@@ -1,0 +1,52 @@
+import type { Request, Response } from "express";
+
+import sendRespond from "../../utils/sendResponse";
+
+import { issueService } from "./issues.service";
+import sendErrorResponse from "../../utils/errorHandler";
+
+const CreateIssue = async (req: Request, res: Response) => {
+  try {
+    const token = req.headers.authorization;
+
+    if (!token) {
+      return sendRespond(res, {
+        status: 401,
+        success: false,
+        message: "No token provided",
+      });
+    }
+    if (req.body.status) {
+  return sendErrorResponse(res, {
+    status: 400,
+    success: false,
+    message: "You cannot set status while creating an issue",
+  });
+}
+    const result = await issueService.createIssueIntoDB(token, req.body);
+    
+    return sendRespond(res, {
+      status: 201,
+      success: true,
+      message: "Issue created successfully",
+      data: result,
+    });
+  } catch (error: unknown) {
+    sendErrorResponse(res, {
+      status: 500,
+      success: false,
+      message: error instanceof Error ? error.message : "Internal Server Error",
+    });
+  }
+
+  //   return sendRespond(res, {
+  //     status: 200,
+  //     success: true,
+  //     message: "Issue created successfully",
+  //     data: result.rows[0] || null,
+  //   });
+};
+
+export const issuesController = {
+  CreateIssue,
+};
