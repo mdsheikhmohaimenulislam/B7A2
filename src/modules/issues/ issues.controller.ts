@@ -17,14 +17,14 @@ const CreateIssue = async (req: Request, res: Response) => {
       });
     }
     if (req.body.status) {
-  return sendErrorResponse(res, {
-    status: 400,
-    success: false,
-    message: "You cannot set status while creating an issue",
-  });
-}
+      return sendErrorResponse(res, {
+        status: 400,
+        success: false,
+        message: "You cannot set status while creating an issue",
+      });
+    }
     const result = await issueService.createIssueIntoDB(token, req.body);
-    
+
     return sendRespond(res, {
       status: 201,
       success: true,
@@ -38,15 +38,26 @@ const CreateIssue = async (req: Request, res: Response) => {
       message: error instanceof Error ? error.message : "Internal Server Error",
     });
   }
+};
 
-  //   return sendRespond(res, {
-  //     status: 200,
-  //     success: true,
-  //     message: "Issue created successfully",
-  //     data: result.rows[0] || null,
-  //   });
+const getAllIssues = async (req: Request, res: Response) => {
+  try {
+    const result = await issueService.getAllIssuesIntoDB(req.query);
+
+    return res.status(200).json({
+      success: true,
+      data: result,
+    });
+  } catch (error: unknown) {
+    sendErrorResponse(res, {
+      status: 500,
+      success: false,
+      message: error instanceof Error ? error.message : "Server Error",
+    });
+  }
 };
 
 export const issuesController = {
   CreateIssue,
+  getAllIssues,
 };
