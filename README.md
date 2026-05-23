@@ -81,21 +81,51 @@ The project uses secure JWT authentication, PostgreSQL database, and raw SQL que
 
 ```bash
 src/
+├── config/
+│   ├── db.ts
+│   └── env.ts
 │
-├── app/
-│   ├── config/
-|   |    
-│   ├── middlewares/
-│   ├── modules/
-│   │   ├── auth/
-|   |   |── user/  
-│   │   └── issues/
-│   |
-│   ├── types/
-│   └── utils/
+├── middleware/
+│   ├── authMiddleware.ts
+│   └── modules/
+│
+├── auth/
+│   ├── auth.controller.ts
+│   ├── auth.routes.ts
+│   └── auth.service.ts
+│
+├── issues/
+│   ├── issues.controller.ts
+│   ├── issues.routes.ts
+│   └── issues.service.ts
+│
+├── users/
+│   ├── users.controller.ts
+│   ├── users.route.ts
+│   └── users.service.ts
+│
+├── types/
+│   ├── auth.types.ts
+│   ├── express.d.ts
+│   ├── issue.types.ts
+│   └── user.types.ts
+│
+├── utils/
+│   ├── errorHandler.ts
+│   ├── queryBuilder.ts
+│   └── sendResponse.ts
 │
 ├── app.ts
-└── server.ts
+├── server.ts
+├── env
+│
+├── .gitignore
+├── package-lock.json
+├── package.json
+├── README.md
+├── tsconfig.json
+├── tsup.config.ts
+└── vercel.json
 ```   
 
 
@@ -122,30 +152,71 @@ Authorization: <JWT_TOKEN>
 }
 
 
+### Get All Issues
+
 ```http
 GET /api/issues
 ```
 
+#### Response
+
+```json
+{
+  "success": true,
+  "message": "Issues retrieved successfully",
+  "data": [
+    {
+      "_id": "664f1c2a9b2f4d0012345678",
+      "title": "Login page bug",
+      "description": "Users cannot login with Google account",
+      "status": "open",
+      "priority": "high",
+      "createdBy": "664f1b8c9b2f4d0012341111",
+      "createdAt": "2026-05-23T18:20:00.000Z",
+      "updatedAt": "2026-05-23T18:20:00.000Z"
+    },
+
+  ]
+}
+```
+
 ---
 
-## Query Parameters
-
-| Parameter | Values |
-|---|---|
-| sort | newest / oldest |
-| type | bug / feature_request |
-| status | open / in_progress / resolved |
-
----
-
-## Example
+### Filter & Sort Issues
 
 ```http
 GET /api/issues?sort=newest&type=bug
 ```
 
----
+#### Query Parameters
 
+| Parameter | Type   | Description                  |
+| ---------- | ------ | ---------------------------- |
+| sort       | string | Sort issues by newest/oldest |
+| type       | string | Filter issues by type        |
+
+#### Response
+
+```json
+{
+  "success": true,
+  "message": "Filtered issues retrieved successfully",
+  "data": [
+    {
+      "_id": "664f1c2a9b2f4d0012345678",
+      "title": "Login page bug",
+      "description": "Users cannot login with Google account",
+      "type": "bug",
+      "status": "open",
+      "priority": "high",
+      "createdBy": "664f1b8c9b2f4d0012341111",
+      "createdAt": "2026-05-23T18:20:00.000Z",
+      "updatedAt": "2026-05-23T18:20:00.000Z"
+    },
+
+  ]
+}
+```
 # 📄 Get Single Issue
 
 ## Endpoint
@@ -154,6 +225,31 @@ GET /api/issues?sort=newest&type=bug
 GET /api/issues/:id
 ```
 
+## Example Request
+
+```http
+GET /api/issues/664f1c2a9b2f4d0012345678
+```
+
+## Response
+
+```json
+{
+  "success": true,
+  "message": "Issue retrieved successfully",
+  "data": {
+    "_id": "664f1c2a9b2f4d0012345678",
+    "title": "Login page bug",
+    "description": "Users cannot login with Google account",
+    "type": "bug",
+    "status": "open",
+    "priority": "high",
+    "createdBy": "664f1b8c9b2f4d0012341111",
+    "createdAt": "2026-05-23T18:20:00.000Z",
+    "updatedAt": "2026-05-23T18:20:00.000Z"
+  }
+}
+```
 ---
 
 # ✏️ Update Issue
@@ -164,10 +260,47 @@ GET /api/issues/:id
 PATCH /api/issues/:id
 ```
 
+## Example Request
+
+```http
+PATCH /api/issues/664f1c2a9b2f4d0012345678
+```
+
 ## Headers
 
 ```http
 Authorization: <JWT_TOKEN>
+Content-Type: application/json
+```
+
+## Request Body
+
+```json
+{
+  "title": "Updated login issue",
+  "status": "in-progress",
+  "priority": "medium"
+}
+```
+
+## Response
+
+```json
+{
+  "success": true,
+  "message": "Issue updated successfully",
+  "data": {
+    "_id": "664f1c2a9b2f4d0012345678",
+    "title": "Updated login issue",
+    "description": "Users cannot login with Google account",
+    "type": "bug",
+    "status": "in-progress",
+    "priority": "medium",
+    "createdBy": "664f1b8c9b2f4d0012341111",
+    "createdAt": "2026-05-23T18:20:00.000Z",
+    "updatedAt": "2026-05-24T08:10:00.000Z"
+  }
+}
 ```
 
 ---
@@ -180,10 +313,25 @@ Authorization: <JWT_TOKEN>
 DELETE /api/issues/:id
 ```
 
+## Example Request
+
+```http
+DELETE /api/issues/664f1c2a9b2f4d0012345678
+```
+
 ## Headers
 
 ```http
 Authorization: <JWT_TOKEN>
+```
+
+## Response
+
+```json
+{
+  "success": true,
+  "message": "Issue deleted successfully"
+}
 ```
 
 ---
@@ -227,6 +375,44 @@ Authorization: <JWT_TOKEN>
   - resolved
 
 ---
+
+# 📦 Response Structure
+
+## ✅ Success Response
+
+```json
+{
+  "success": true,
+  "message": "Operation successful",
+  "data": {}
+}
+```
+
+---
+
+## ❌ Error Response
+
+```json
+{
+  "success": false,
+  "message": "Something went wrong",
+  "errors": {}
+}
+```
+
+---
+
+# 📥 Request Body Example
+
+```json
+{
+  "title": "Database timeout issue",
+  "description": "Database crashes under heavy load",
+  "type": "bug"
+}
+```
+
+
 
 # 📡 HTTP Status Codes
 
