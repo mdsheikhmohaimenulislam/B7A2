@@ -152,12 +152,12 @@ Authorization: <JWT_TOKEN>
 }
 
 
+
+```
 ### Get All Issues
 
 ```http
 GET /api/issues
-```
-
 #### Response
 
 ```json
